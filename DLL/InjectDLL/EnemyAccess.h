@@ -57,6 +57,7 @@ namespace MemoryAccess
 					EnemyList[svEnemy.Hash] = new Enemy(0);
 
 				EnemyList[svEnemy.Hash]->SetHealth(svEnemy.Health);
+				EnemyList[svEnemy.Hash]->SetPosition(svEnemy.Position);
 			}
 
 			Mutex.unlock();
@@ -80,15 +81,20 @@ namespace MemoryAccess
 				if (!LocalEnemy->GetSetup())
 					continue;
 
+				Vec3f MemoryPosition = LocalEnemy->GetPosition(__FUNCTION__);
+				bool PositionUpdated = LocalEnemy->HasPositionChanged(MemoryPosition);
+
 				LocalEnemy->GetHealth(__FUNCTION__);
 
-				if (!LocalEnemy->IsUpdated)
+				if (!LocalEnemy->IsUpdated && !PositionUpdated)
 					continue;
 				
 				EnemyData* EnemyToAdd = new EnemyData();
 				EnemyToAdd->Hash = LocalHash;
 				EnemyToAdd->Health = LocalEnemy->CurrentHealth;
+				EnemyToAdd->Position = MemoryPosition;
 				result->Health.push_back(*EnemyToAdd);
+				LocalEnemy->CurrentPosition = MemoryPosition;
 				LocalEnemy->IsUpdated = false;
 			}
 
@@ -99,4 +105,3 @@ namespace MemoryAccess
 	};
 
 }
-
