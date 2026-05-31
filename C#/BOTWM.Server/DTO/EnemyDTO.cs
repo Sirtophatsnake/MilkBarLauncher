@@ -15,6 +15,13 @@ namespace BOTWM.Server.DTO
             Position = new Vec3f();
         }
 
+        public EnemyData(int hash, int health)
+        {
+            Hash = hash;
+            Health = health;
+            Position = new Vec3f();
+        }
+
         public EnemyData(int hash, int health, Vec3f position)
         {
             Hash = hash;
