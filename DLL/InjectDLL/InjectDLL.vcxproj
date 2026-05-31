@@ -288,23 +288,28 @@
     <ClInclude Include="WorldDTO.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BigEndian.cpp" />
     <ClCompile Include="Client.cpp" />
     <ClCompile Include="Deserializer.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="dllmain_Functions.cpp" />
     <ClCompile Include="Interpretation.cpp" />
-    <ClCompile Include="LittleEndian.cpp" />
-    <ClCompile Include="Memory.cpp" />
-    <ClCompile Include="MemoryAccess.cpp" />
     <ClCompile Include="NamedPipes.cpp" />
     <ClCompile Include="QuaternionBE.cpp" />
     <ClCompile Include="Serialization.cpp" />
     <ClCompile Include="Serializer.cpp" />
     <ClCompile Include="Vec3fBE.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="InjectDLL.rc" />
+    <ClCompile Include="LoggerService.cpp" />
+    <ClCompile Include="MessagerService.cpp" />
+    <ClCompile Include="ReadCemu.cpp" />
+    <ClCompile Include="Scanner.cpp" />
+    <ClCompile Include="QuestSync.cpp" />
+    <ClCompile Include="multiplayerQuest.cpp" />
+    <ClCompile Include="Player.cpp" />
+    <ClCompile Include="CharacterClasses.cpp" />
+    <ClCompile Include="BombSyncer.cpp" />
+    <ClCompile Include="WorldClass.cpp" />
+    <ClCompile Include="Spawning.cpp" />
+    <ClCompile Include="SpawningFunction.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
