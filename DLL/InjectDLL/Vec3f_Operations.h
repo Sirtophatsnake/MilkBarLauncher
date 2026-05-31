@@ -11,7 +11,7 @@ namespace Helper
 	public:
 		static float GetDistance(Vec3f first, Vec3f second, bool includeYAxis = true)
 		{
-			return std::sqrt(pow(std::abs(first.x() - second.x()), 2) + pow(std::abs(first.z() - second.z()), 2) + includeYAxis ? pow(std::abs(first.y() - second.y()), 2) : 0);
+			return std::sqrt(pow(std::abs(first.x() - second.x()), 2) + pow(std::abs(first.z() - second.z()), 2) + (includeYAxis ? pow(std::abs(first.y() - second.y()), 2) : 0));
 		}
 
 		static Vec3f RoundVec3f(Vec3f input, int decimalPlaces)
@@ -27,7 +27,7 @@ namespace Helper
 
 		static bool Equals(Vec3f first, Vec3f second)
 		{
-			return first.x() == second.y() && first.y() == second.y() && first.z() == second.z();
+			return first.x() == second.x() && first.y() == second.y() && first.z() == second.z();
 		}
 	};
 }
