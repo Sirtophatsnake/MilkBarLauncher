@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -9,7 +9,6 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.IO;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Text.Json;
 using System.Diagnostics;
@@ -67,21 +66,26 @@ namespace GUIApp
             if(File.Exists(Directory.GetCurrentDirectory() + "/Branch.txt"))
                 Branch = File.ReadAllText(Directory.GetCurrentDirectory() + "/Branch.txt");
 
-            using (var client = new HttpClient())
+            try
             {
-                client.DefaultRequestHeaders.Add("User-Agent", "request");
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("token", "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");
-                var contentsUrl = $"https://api.github.com/repos/edgarcantuco/BOTW.Release/contents/version.txt?ref={Branch}";
-
-                var response = Task.Run(() => client.GetStringAsync(contentsUrl));
-                response.Wait();
-
-                var json = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(response.Result);
-                if(VERSION != System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(json["content"].ToString())))
+                using (var client = new HttpClient())
                 {
-                    runCMD(Directory.GetCurrentDirectory() + "/BOTWMUpdater.py");
+                    client.DefaultRequestHeaders.Add("User-Agent", "request");
+                    var contentsUrl = $"https://api.github.com/repos/edgarcantuco/BOTW.Release/contents/version.txt?ref={Branch}";
+
+                    var response = Task.Run(() => client.GetStringAsync(contentsUrl));
+                    response.Wait();
+
+                    var json = JsonSerializer.Deserialize<Dictionary<string, JsonElement>>(response.Result);
+                    if(VERSION != System.Text.Encoding.UTF8.GetString(System.Convert.FromBase64String(json["content"].ToString())))
+                    {
+                        runCMD(Directory.GetCurrentDirectory() + "/BOTWMUpdater.py");
+                    }
                 }
-                
+            }
+            catch
+            {
+                // Skip update check when GitHub is unavailable or rejects the request.
             }
         }
 
