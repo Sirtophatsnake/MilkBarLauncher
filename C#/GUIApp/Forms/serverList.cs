@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -28,8 +28,7 @@ namespace GUIApp
         {
             fixServerListSize();
 
-            //serverListDict = readXML.getServerList();
-            serverListDict = readXML.getServerList(2);
+            serverListDict = readXML.getServerList(2) ?? new Dictionary<string, string>[0];
             int count = 0;
 
             for (int i = serverPanel.Controls.Count - 1; i > -1; i--)
@@ -41,12 +40,12 @@ namespace GUIApp
 
             foreach (Dictionary<string, string> item in serverListDict)
             {
-
                 Panel newPanel = new Panel();
                 newPanel.Size = new Size(serverPanel.Width - 6, 100);
                 newPanel.Name = "serverPanel_" + panelNumber.ToString();
 
-                PictureBox serverPicture = addControls.createPB(placeholderImages[count], 5, 5, 90, 90);
+                Bitmap placeholderImage = GetPlaceholderImage(count);
+                PictureBox serverPicture = addControls.createPB(placeholderImage, 5, 5, 90, 90);
                 Label nameLabel1 = addControls.createLabel("Server name:", 103, 5);
                 Label nameLabel2 = addControls.createLabel(item.ContainsKey("Name") ? item["Name"] : "Placeholder Name", 212, 5);
                 Label descriptionLabel1 = addControls.createLabel("Description:", 103, 25);
@@ -118,6 +117,15 @@ namespace GUIApp
 
                 panelNumber++;
             }
+        }
+
+        private Bitmap GetPlaceholderImage(int index)
+        {
+            if (placeholderImages == null || placeholderImages.Length == 0)
+                return new Bitmap(90, 90);
+
+            Bitmap image = placeholderImages[index % placeholderImages.Length];
+            return image ?? new Bitmap(90, 90);
         }
 
         private void connectClick(object sender, EventArgs e)
