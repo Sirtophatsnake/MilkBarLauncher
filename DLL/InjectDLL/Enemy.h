@@ -12,6 +12,7 @@ namespace DataTypes
 		BigEndian<int>* Health;
 		Vec3fBE* PrevPos;
 		int CurrentHealth = -1;
+		Vec3f CurrentPosition = Vec3f();
 		std::string EnemyType;
 		bool IsSpawned = false;
 		bool IsUpdated = false;
@@ -28,6 +29,26 @@ namespace DataTypes
 		{
 			if (CurrentHealth == -1 || newHealth < CurrentHealth)
 				CurrentHealth = newHealth;
+		}
+
+		void SetPosition(Vec3f newPosition)
+		{
+			CurrentPosition = newPosition;
+
+			if (IsSpawned && GetSetup())
+				PrevPos->set(newPosition, __FUNCTION__);
+		}
+
+		Vec3f GetPosition(const char* caller)
+		{
+			CurrentPosition = this->PrevPos->get(caller);
+			return CurrentPosition;
+		}
+
+		bool HasPositionChanged(Vec3f newPosition)
+		{
+			float distance = Helper::Vec3f_Operations::GetDistance(CurrentPosition, newPosition, true);
+			return distance > 0.05f;
 		}
 
 		int GetHealth(const char* caller)
@@ -55,7 +76,10 @@ namespace DataTypes
 			{
 				BaseAddress = 0;
 				if (GetSetup())
+				{
 					this->GetHealth(__FUNCTION__);
+					this->GetPosition(__FUNCTION__);
+				}
 				//this->Health = new BigEndian<int>(0, __FUNCTION__);
 				//this->PrevPos = new Vec3fBE(0, __FUNCTION__);
 				this->Health->setAddress(0, __FUNCTION__, false);
