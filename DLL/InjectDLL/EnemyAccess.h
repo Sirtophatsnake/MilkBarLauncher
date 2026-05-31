@@ -4,19 +4,15 @@
 
 namespace MemoryAccess
 {
-
-	class EnemyAccess 
+	class EnemyAccess
 	{
 		std::map<int, Enemy*> EnemyList;
 		std::shared_mutex Mutex;
 
-
 	public:
 		EnemyAccess()
 		{
-
 			EnemyList = {};
-
 		}
 
 		void UpdateEnemyAddress(uint64_t baseAddress, bool created)
@@ -27,7 +23,6 @@ namespace MemoryAccess
 
 			Mutex.lock();
 
-			// Process Enemy to obtain healthAddress and hash;
 			if (!EnemyList.count(hash))
 				EnemyList[hash] = new Enemy(created ? baseAddress : 0);
 			else
@@ -39,9 +34,7 @@ namespace MemoryAccess
 		void RemoveEnemyFromList(uint64_t baseAddress)
 		{
 			Mutex.lock();
-
 			EnemyList.clear();
-
 			Mutex.unlock();
 		}
 
@@ -81,14 +74,15 @@ namespace MemoryAccess
 				if (!LocalEnemy->GetSetup())
 					continue;
 
-				Vec3f MemoryPosition = LocalEnemy->GetPosition(__FUNCTION__);
-				bool PositionUpdated = LocalEnemy->HasPositionChanged(MemoryPosition);
+				Vec3f PreviousPosition = LocalEnemy->CurrentPosition;
+				Vec3f MemoryPosition = LocalEnemy->PrevPos->get(__FUNCTION__);
+				bool PositionUpdated = Helper::Vec3f_Operations::GetDistance(PreviousPosition, MemoryPosition, true) > 0.05f;
 
 				LocalEnemy->GetHealth(__FUNCTION__);
 
 				if (!LocalEnemy->IsUpdated && !PositionUpdated)
 					continue;
-				
+
 				EnemyData* EnemyToAdd = new EnemyData();
 				EnemyToAdd->Hash = LocalHash;
 				EnemyToAdd->Health = LocalEnemy->CurrentHealth;
@@ -99,9 +93,7 @@ namespace MemoryAccess
 			}
 
 			Mutex.unlock();
-
 			return result;
 		}
 	};
-
 }
