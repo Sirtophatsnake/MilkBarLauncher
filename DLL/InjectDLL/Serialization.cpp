@@ -232,7 +232,6 @@ DTO::CloseCharacterDTO* Serializer::DeserializeCloseCharacter(std::vector<byte> 
 	DTO::CloseCharacterDTO* result = new DTO::CloseCharacterDTO();
 	
 	copyData(&result->PlayerNumber, &input[0] + currentIndex, 1);
-	//copyData(&result->Status, &input[0] + currentIndex, 1);
 	copyData(&result->Updated, &input[0] + currentIndex, 1);
 	copyData(&result->Position, &input[0] + currentIndex, 12);
 	copyData(&result->Rotation1, &input[0] + currentIndex, 16);
@@ -243,7 +242,6 @@ DTO::CloseCharacterDTO* Serializer::DeserializeCloseCharacter(std::vector<byte> 
 	copyData(&result->Health, &input[0] + currentIndex, 4);
 	copyData(&result->AtkUp, &input[0] + currentIndex, 4);
 	copyData(&result->IsEquipped, &input[0] + currentIndex, 1);
-	//copyData(&result->Equipment, &input[0] + currentIndex, 13);
 	copyData(&result->Equipment.WType, &input[0] + currentIndex, 1);
 	copyData(&result->Equipment.Sword, &input[0] + currentIndex, 2);
 	copyData(&result->Equipment.Shield, &input[0] + currentIndex, 2);
@@ -302,7 +300,6 @@ DTO::FarCharacterDTO* Serializer::DeserializeFarCharacter(std::vector<byte> inpu
 	DTO::FarCharacterDTO* result = new DTO::FarCharacterDTO();
 
 	copyData(&result->PlayerNumber, &input[0] + currentIndex, 1);
-	//copyData(&result->Status, &input[0] + currentIndex, 1);
 	copyData(&result->Updated, &input[0] + currentIndex, 1);
 	copyData(&result->Position, &input[0] + currentIndex, 12);
 
@@ -361,10 +358,12 @@ DTO::EnemyDTO* Serializer::DeserializeEnemyData(std::vector<byte> input)
 		EnemyData* data = new EnemyData();
 		copyData(&data->Hash, &input[0] + currentIndex, 4);
 		copyData(&data->Health, &input[0] + currentIndex, 4);
+		copyData(&data->Position, &input[0] + currentIndex, 12);
 
 		EnemyData dataToAdd = EnemyData();
 		dataToAdd.Hash = data->Hash;
 		dataToAdd.Health = data->Health;
+		dataToAdd.Position = data->Position;
 
 		result->Health.push_back(dataToAdd);
 	}
@@ -516,7 +515,6 @@ void Serializer::SerializeCharacterData(DTO::ClientCharacterDTO* input)
 	copyData(&ClientData[0] + currentIndex, &input->Health, 4);
 	copyData(&ClientData[0] + currentIndex, &input->AtkUp, 4);
 	copyData(&ClientData[0] + currentIndex, &input->IsEquipped, 1);
-	//copyData(&ClientData[0] + currentIndex, &input->Equipment, 13);
 	copyData(&ClientData[0] + currentIndex, &input->Equipment.WType, 1);
 	copyData(&ClientData[0] + currentIndex, &input->Equipment.Sword, 2);
 	copyData(&ClientData[0] + currentIndex, &input->Equipment.Shield, 2);
@@ -572,6 +570,7 @@ void Serializer::SerializeEnemyData(DTO::EnemyDTO* input)
 	{
 		copyData(&ClientData[0] + currentIndex, &input->Health[i].Hash, 4);
 		copyData(&ClientData[0] + currentIndex, &input->Health[i].Health, 4);
+		copyData(&ClientData[0] + currentIndex, &input->Health[i].Position, 12);
 	}
 }
 
