@@ -1,4 +1,4 @@
-﻿using BOTWM.Server.DTO;
+using BOTWM.Server.DTO;
 
 namespace BOTWM.Server.ServerClasses
 {
@@ -10,15 +10,15 @@ namespace BOTWM.Server.ServerClasses
         public bool isEnemySync;
         private DateTime LastClear;
 
-        public Dictionary<int, int> EnemyList;
-        public List<Dictionary<int, int>> Queue;
+        public Dictionary<int, EnemyData> EnemyList;
+        public List<Dictionary<int, EnemyData>> Queue;
 
         public Enemy(int playerLimit, bool enemySync)
         {
-            EnemyList = new Dictionary<int, int>();
-            Queue = new List<Dictionary<int, int>>();
+            EnemyList = new Dictionary<int, EnemyData>();
+            Queue = new List<Dictionary<int, EnemyData>>();
             for (int i = 0; i < playerLimit; i++)
-                Queue.Add(new Dictionary<int, int>());
+                Queue.Add(new Dictionary<int, EnemyData>());
             UpdateServiceStatus(enemySync);
             LastClear = DateTime.Now;
         }
@@ -40,8 +40,8 @@ namespace BOTWM.Server.ServerClasses
 
             EMutex.WaitOne(100);
 
-            foreach (EnemyData Enemy in userData.Health)
-                UpdateEnemyHealth(Enemy.Hash, Enemy.Health);
+            foreach (EnemyData item in userData.Health)
+                UpdateEntry(item);
 
             EMutex.ReleaseMutex();
         }
@@ -57,8 +57,6 @@ namespace BOTWM.Server.ServerClasses
             LastClear = DateTime.Now;
 
             EMutex.ReleaseMutex();
-
-            return;
         }
 
         public void FillQueue(int playerNumber)
@@ -67,8 +65,8 @@ namespace BOTWM.Server.ServerClasses
 
             Queue[playerNumber].Clear();
 
-            foreach (KeyValuePair<int, int> kvp in EnemyList)
-                Queue[playerNumber].Add(kvp.Key, kvp.Value);
+            foreach (KeyValuePair<int, EnemyData> kvp in EnemyList)
+                Queue[playerNumber][kvp.Key] = kvp.Value;
 
             EMutex.ReleaseMutex();
         }
@@ -79,8 +77,8 @@ namespace BOTWM.Server.ServerClasses
 
             EMutex.WaitOne(100);
 
-            foreach(KeyValuePair<int, int> kvp in Queue[playerNumber])
-                Data.Add(new EnemyData(kvp.Key, kvp.Value));
+            foreach(KeyValuePair<int, EnemyData> kvp in Queue[playerNumber])
+                Data.Add(kvp.Value);
 
             Queue[playerNumber].Clear();
 
@@ -89,15 +87,21 @@ namespace BOTWM.Server.ServerClasses
             return Data;
         }
 
-        private void UpdateEnemyHealth(int hash, int health)
+        private void UpdateEntry(EnemyData item)
         {
-            if (!EnemyList.ContainsKey(hash) || (EnemyList.ContainsKey(hash) && EnemyList[hash] > health))
-            {
-                EnemyList[hash] = health; // TODO: Make sure that we can add new entries to dictionaries through this method
+            bool healthChanged = !EnemyList.ContainsKey(item.Hash) || EnemyList[item.Hash].Health > item.Health;
+            bool positionChanged = !EnemyList.ContainsKey(item.Hash) || EnemyList[item.Hash].Position.GetDistance(item.Position) > 0.05f;
 
-                for (int i = 0; i < Queue.Count; i++)
-                    Queue[i][hash] = health;
-            }
+            if (!healthChanged && !positionChanged)
+                return;
+
+            if (EnemyList.ContainsKey(item.Hash) && !healthChanged)
+                item.Health = EnemyList[item.Hash].Health;
+
+            EnemyList[item.Hash] = item;
+
+            for (int i = 0; i < Queue.Count; i++)
+                Queue[i][item.Hash] = item;
         }
     }
 }
