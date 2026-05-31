@@ -40,20 +40,22 @@ namespace GUIApp
 
             foreach (Dictionary<string, string> item in serverListDict)
             {
+                if (item == null)
+                    continue;
+
                 Panel newPanel = new Panel();
                 newPanel.Size = new Size(serverPanel.Width - 6, 100);
                 newPanel.Name = "serverPanel_" + panelNumber.ToString();
 
-                Bitmap placeholderImage = GetPlaceholderImage(count);
-                PictureBox serverPicture = addControls.createPB(placeholderImage, 5, 5, 90, 90);
-                Label nameLabel1 = addControls.createLabel("Server name:", 103, 5);
-                Label nameLabel2 = addControls.createLabel(item.ContainsKey("Name") ? item["Name"] : "Placeholder Name", 212, 5);
-                Label descriptionLabel1 = addControls.createLabel("Description:", 103, 25);
-                Label descriptionLabel2 = addControls.createLabel(item.ContainsKey("DESCRIPTION") ? item["DESCRIPTION"] : "Placeholder description", 212, 25);
-                Label settingsLabel = addControls.createLabel("Settings:", 103, 45);
-                Button connectButton = addControls.createButton("Connect", newPanel.Width - 103, 3, 100, 28);
-                Button editButton = addControls.createButton("Edit", newPanel.Width - 103, 36, 100, 28);
-                Button removeButton = addControls.createButton("Remove", newPanel.Width - 103, 69, 100, 28);
+                PictureBox serverPicture = createPB(GetPlaceholderImage(count), 5, 5, 90, 90);
+                Label nameLabel1 = createLabel("Server name:", 103, 5);
+                Label nameLabel2 = createLabel(item.ContainsKey("Name") ? item["Name"] : "Placeholder Name", 212, 5);
+                Label descriptionLabel1 = createLabel("Description:", 103, 25);
+                Label descriptionLabel2 = createLabel(item.ContainsKey("DESCRIPTION") ? item["DESCRIPTION"] : "Placeholder description", 212, 25);
+                Label settingsLabel = createLabel("Settings:", 103, 45);
+                Button connectButton = createButton("Connect", newPanel.Width - 103, 3, 100, 28);
+                Button editButton = createButton("Edit", newPanel.Width - 103, 36, 100, 28);
+                Button removeButton = createButton("Remove", newPanel.Width - 103, 69, 100, 28);
 
                 connectButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
                 editButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
@@ -74,6 +76,9 @@ namespace GUIApp
 
                 foreach (Control ctrl in panelControls)
                 {
+                    if (ctrl == null)
+                        continue;
+
                     newPanel.Controls.Add(ctrl);
                     ctrl.MouseEnter += new EventHandler(this.mouseInPanel);
                 }
@@ -126,6 +131,34 @@ namespace GUIApp
 
             Bitmap image = placeholderImages[index % placeholderImages.Length];
             return image ?? new Bitmap(90, 90);
+        }
+
+        private PictureBox createPB(Image image, int x, int y, int width, int height)
+        {
+            PictureBox pictureBox = new PictureBox();
+            pictureBox.Image = image;
+            pictureBox.Location = new Point(x, y);
+            pictureBox.Size = new Size(width, height);
+            pictureBox.SizeMode = PictureBoxSizeMode.StretchImage;
+            return pictureBox;
+        }
+
+        private Label createLabel(string text, int x, int y)
+        {
+            Label label = new Label();
+            label.Text = text ?? string.Empty;
+            label.Location = new Point(x, y);
+            label.AutoSize = true;
+            return label;
+        }
+
+        private Button createButton(string text, int x, int y, int width, int height)
+        {
+            Button button = new Button();
+            button.Text = text ?? string.Empty;
+            button.Location = new Point(x, y);
+            button.Size = new Size(width, height);
+            return button;
         }
 
         private void connectClick(object sender, EventArgs e)
