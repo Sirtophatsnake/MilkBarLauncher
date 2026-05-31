@@ -1,4 +1,5 @@
 #pragma once
+#include "Vec3f.h"
 
 namespace DataTypes
 {
@@ -8,6 +9,7 @@ namespace DataTypes
 	public:
 		int Hash;
 		int Health;
+		Vec3f Position;
 
 	};
 
